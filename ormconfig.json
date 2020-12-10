@@ -2,8 +2,8 @@
   "type": "postgres",
   "host": "localhost",
   "port": 5432,
-  "username": "trigger",
-  "password": "warning",
+  "username": "postgres",
+  "password": "docker",
   "database": "trigger_warnings",
   "entities": [
     "./src/modules/**/infra/typeorm/entities/*.ts"
