@@ -1,7 +1,9 @@
 import AppError from '@shared/errors/AppError';
+import { inject, injectable } from 'tsyringe';
 
-import User from '../infra/typeorm/entities/User';
+import IHashProvider from '../providers/HashProvider/models/IHashProvider';
 import IUsersRepository from '../repositories/IUsersRepository';
+import User from '../infra/typeorm/entities/User';
 
 interface IRequest {
   name: string;
@@ -9,8 +11,15 @@ interface IRequest {
   password: string;
 }
 
+@injectable()
 class CreateUserService {
-  constructor(private usersRepository: IUsersRepository) {}
+  constructor(
+    @inject('UsersRepository')
+    private usersRepository: IUsersRepository,
+
+    @inject('HashProvider')
+    private hashProvider: IHashProvider,
+  ) {}
 
   public async execute({ name, email, password }: IRequest): Promise<User> {
     if (!name || name === '') throw new AppError('Name can not be null.');
@@ -22,10 +31,12 @@ class CreateUserService {
 
     if (emailAlreadyInUse) throw new AppError('Email already in use.');
 
+    const hashedPassword = await this.hashProvider.generateHash(password);
+
     const user = await this.usersRepository.create({
       name,
       email,
-      password,
+      password: hashedPassword,
     });
 
     return user;

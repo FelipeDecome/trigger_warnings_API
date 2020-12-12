@@ -3,25 +3,30 @@ import AppError from '@shared/errors/AppError';
 import User from '../infra/typeorm/entities/User';
 import CreateUserService from './CreateUserService';
 import FakeUsersRepository from '../repositories/fakes/FakeUsersRepository';
+import FakeHashProvider from '../providers/HashProvider/fakes/FakeHashProvider';
 
 let fakeUsersRepository: FakeUsersRepository;
-
+let fakeHashProvider: FakeHashProvider;
 let createUser: CreateUserService;
 
 describe('CreateUser', () => {
   beforeEach(() => {
     fakeUsersRepository = new FakeUsersRepository();
+    fakeHashProvider = new FakeHashProvider();
 
-    createUser = new CreateUserService(fakeUsersRepository);
+    createUser = new CreateUserService(fakeUsersRepository, fakeHashProvider);
   });
 
   it('should be able to create a new User.', async () => {
+    const generateHash = jest.spyOn(fakeHashProvider, 'generateHash');
+
     const user = await createUser.execute({
       name: 'John Doe',
       email: 'johndoe@example.com.br',
       password: '123456',
     });
 
+    expect(generateHash).toBeCalledWith('123456');
     expect(user).toBeInstanceOf(User);
     expect(user.id).toBeDefined();
     expect(user.name).toBe('John Doe');
