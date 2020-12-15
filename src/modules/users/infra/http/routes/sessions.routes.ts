@@ -1,14 +1,11 @@
 import { Router } from 'express';
 
-import UsersController from '../controllers/UsersController';
-import ensureAuthenticated from '../middlewares/ensureAuthenticated';
+import SessionsController from '../controllers/SessionsController';
 
-const usersController = new UsersController();
+const sessionsController = new SessionsController();
 
 const sessionsRouter = Router();
 
-sessionsRouter.use(ensureAuthenticated);
-
-sessionsRouter.post('/', usersController.create);
+sessionsRouter.post('/', sessionsController.create);
 
 export default sessionsRouter;

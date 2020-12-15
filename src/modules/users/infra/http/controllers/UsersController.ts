@@ -16,7 +16,7 @@ class UsersController {
 
     delete user.password;
 
-    return response.status(200).json({ user });
+    return response.status(200).json(user);
   }
 }
 
