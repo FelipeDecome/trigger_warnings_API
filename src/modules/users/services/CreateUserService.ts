@@ -1,9 +1,12 @@
+import path from 'path';
 import { inject, injectable } from 'tsyringe';
 import AppError from '@shared/errors/AppError';
 
+import IMailProvider from '@shared/container/providers/MailProvider/models/IMailProvider';
 import IHashProvider from '../providers/HashProvider/models/IHashProvider';
 import IUsersRepository from '../repositories/IUsersRepository';
 import User from '../infra/typeorm/entities/User';
+import IUserTokensRepository from '../repositories/IUserTokensRepository';
 
 interface IRequest {
   name: string;
@@ -19,6 +22,12 @@ class CreateUserService {
 
     @inject('HashProvider')
     private hashProvider: IHashProvider,
+
+    @inject('MailProvider')
+    private mailProvider: IMailProvider,
+
+    @inject('UserTokensRepository')
+    private userTokensRepository: IUserTokensRepository,
   ) {}
 
   public async execute({ name, email, password }: IRequest): Promise<User> {
@@ -37,6 +46,32 @@ class CreateUserService {
       name,
       email,
       password: hashedPassword,
+    });
+
+    const confirmationToken = await this.userTokensRepository.generate({
+      type: 'confirmation',
+      user_id: user.id,
+    });
+
+    const createUserMailTemplate = path.resolve(
+      __dirname,
+      '..',
+      'views',
+      'create_user.hbs',
+    );
+
+    const link = `https://localhost:3333/users/confirmation/${confirmationToken.token}`;
+
+    await this.mailProvider.sendMail({
+      to: {
+        name,
+        email,
+      },
+      subject: 'Confirmação de conta',
+      templateData: {
+        file: createUserMailTemplate,
+        variables: { name, link },
+      },
     });
 
     return user;
