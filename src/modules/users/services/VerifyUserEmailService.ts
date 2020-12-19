@@ -1,4 +1,5 @@
 import { inject, injectable } from 'tsyringe';
+import { validate } from 'uuid';
 
 import AppError from '@shared/errors/AppError';
 
@@ -20,6 +21,9 @@ class VerifyUserEmailService {
   ) {}
 
   public async execute({ token }: IRequest): Promise<void> {
+    if (!validate(token))
+      throw new AppError("Token isn't a valid generated UUID.");
+
     const findToken = await this.userTokensRepository.findByToken(token);
 
     if (!findToken) throw new AppError('Confirmation token does not exist.');

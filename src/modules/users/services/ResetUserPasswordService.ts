@@ -1,5 +1,6 @@
 import { inject, injectable } from 'tsyringe';
 import { differenceInHours } from 'date-fns';
+import { validate } from 'uuid';
 
 import AppError from '@shared/errors/AppError';
 
@@ -31,6 +32,9 @@ class ResetUserPasswordService {
     password,
     password_confirmation,
   }: IRequest): Promise<void> {
+    if (!validate(token))
+      throw new AppError("Token isn't a valid generated UUID.");
+
     if (password !== password_confirmation)
       throw new AppError('Password and confirmation password must match.');
 
