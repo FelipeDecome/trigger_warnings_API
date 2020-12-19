@@ -51,7 +51,7 @@ describe('ResetUserPassword', () => {
     expect(generateHash).toHaveBeenCalledWith('123123');
   });
 
-  it('should be not able to reset user password with an invalid token.', async () => {
+  it('should not be able to reset user password with an invalid token.', async () => {
     await expect(
       resetUserPassword.execute({
         token: 'invalid_token',
@@ -61,7 +61,7 @@ describe('ResetUserPassword', () => {
     ).rejects.toBeInstanceOf(AppError);
   });
 
-  it('should be not able to reset user password without a reset type token.', async () => {
+  it('should not be able to reset user password without a reset type token.', async () => {
     const user = await fakeUsersRepository.create({
       name: 'John Doe',
       email: 'johndoe@example.com.br',
@@ -82,7 +82,7 @@ describe('ResetUserPassword', () => {
     ).rejects.toBeInstanceOf(AppError);
   });
 
-  it('should be not able to reset the password of a non existent user.', async () => {
+  it('should not be able to reset the password of a non existent user.', async () => {
     const { token } = await fakeUserTokensRepository.generate({
       type: 'reset',
       user_id: 'non_existent_user',
@@ -97,7 +97,7 @@ describe('ResetUserPassword', () => {
     ).rejects.toBeInstanceOf(AppError);
   });
 
-  it("should be not able to reset the password if confirmation password doesn't match.", async () => {
+  it("should not be able to reset the password if confirmation password doesn't match.", async () => {
     const user = await fakeUsersRepository.create({
       name: 'John Doe',
       email: 'johndoe@example.com.br',
@@ -118,7 +118,7 @@ describe('ResetUserPassword', () => {
     ).rejects.toBeInstanceOf(AppError);
   });
 
-  it('should be not able to reset the password if has passed 2 hours since token creation.', async () => {
+  it('should not be able to reset the password if has passed 2 hours since token creation.', async () => {
     const user = await fakeUsersRepository.create({
       name: 'John Doe',
       email: 'johndoe@example.com.br',
@@ -145,7 +145,7 @@ describe('ResetUserPassword', () => {
     ).rejects.toBeInstanceOf(AppError);
   });
 
-  it('should be not able to reset the password if it matchs the old password.', async () => {
+  it('should not be able to reset the password if it matchs the old password.', async () => {
     const user = await fakeUsersRepository.create({
       name: 'John Doe',
       email: 'johndoe@example.com.br',
