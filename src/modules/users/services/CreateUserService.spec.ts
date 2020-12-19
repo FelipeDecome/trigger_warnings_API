@@ -1,32 +1,66 @@
+import 'reflect-metadata';
+
 import AppError from '@shared/errors/AppError';
 
-import User from '../infra/typeorm/entities/User';
+import FakeMailProvider from '@shared/container/providers/MailProvider/fakes/FakeMailProvider';
 import CreateUserService from './CreateUserService';
 import FakeUsersRepository from '../repositories/fakes/FakeUsersRepository';
+import FakeHashProvider from '../providers/HashProvider/fakes/FakeHashProvider';
+import FakeUserTokensRepository from '../repositories/fakes/FakeUserTokensRepository';
+
+import User from '../infra/typeorm/entities/User';
 
 let fakeUsersRepository: FakeUsersRepository;
-
+let fakeUserTokensRepository: FakeUserTokensRepository;
+let fakeMailProvider: FakeMailProvider;
+let fakeHashProvider: FakeHashProvider;
 let createUser: CreateUserService;
 
 describe('CreateUser', () => {
   beforeEach(() => {
     fakeUsersRepository = new FakeUsersRepository();
+    fakeUserTokensRepository = new FakeUserTokensRepository();
+    fakeHashProvider = new FakeHashProvider();
+    fakeMailProvider = new FakeMailProvider();
 
-    createUser = new CreateUserService(fakeUsersRepository);
+    createUser = new CreateUserService(
+      fakeUsersRepository,
+      fakeHashProvider,
+      fakeMailProvider,
+      fakeUserTokensRepository,
+    );
   });
 
   it('should be able to create a new User.', async () => {
+    const generateHash = jest.spyOn(fakeHashProvider, 'generateHash');
+
     const user = await createUser.execute({
       name: 'John Doe',
       email: 'johndoe@example.com.br',
       password: '123456',
     });
 
+    expect(generateHash).toHaveBeenCalledWith('123456');
     expect(user).toBeInstanceOf(User);
     expect(user.id).toBeDefined();
-    expect(user.name).toBe('John Doe');
-    expect(user.email).toBe('johndoe@example.com.br');
-    expect(user.password).toBe('123456');
+  });
+
+  it('should generate a confirmation token and send an email.', async () => {
+    const sendMail = jest.spyOn(fakeMailProvider, 'sendMail');
+    const generateToken = jest.spyOn(fakeUserTokensRepository, 'generate');
+
+    const user = await createUser.execute({
+      name: 'John Doe',
+      email: 'johndoe@example.com.br',
+      password: '123456',
+    });
+
+    expect(generateToken).toBeCalledWith({
+      type: 'confirmation',
+      user_id: user.id,
+    });
+
+    expect(sendMail).toHaveBeenCalled();
   });
 
   it('should not be able to create a user if the name is undefined.', async () => {
