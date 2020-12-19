@@ -38,17 +38,17 @@ class ResetUserPasswordService {
 
     if (!findToken) throw new AppError('Reset token does not exist.');
 
-    if (findToken.type !== 'reset')
+    const { id, type, user_id, created_at: tokenCreatedAt } = findToken;
+
+    if (type !== 'reset')
       throw new AppError("Can't reset password without a reset type token.");
 
-    const user = await this.usersRepository.findById(findToken.user_id);
+    const user = await this.usersRepository.findById(user_id);
 
     if (!user) throw new AppError('User not found.');
 
     if (await this.hashProvider.compareHash(password, user.password))
       throw new AppError("You can't reset your password to your old password.");
-
-    const tokenCreatedAt = findToken.created_at;
 
     if (differenceInHours(Date.now(), tokenCreatedAt) > 2)
       throw new AppError('Token Expired.');
@@ -58,6 +58,8 @@ class ResetUserPasswordService {
     user.password = newHashedPassword;
 
     await this.usersRepository.save(user);
+
+    await this.userTokensRepository.delete(id);
   }
 }
 

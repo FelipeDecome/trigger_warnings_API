@@ -51,6 +51,29 @@ describe('ResetUserPassword', () => {
     expect(generateHash).toHaveBeenCalledWith('123123');
   });
 
+  it('should be able to delete token after reseting password.', async () => {
+    const user = await fakeUsersRepository.create({
+      name: 'John Doe',
+      email: 'johndoe@example.com.br',
+      password: '123456',
+    });
+
+    const { token } = await fakeUserTokensRepository.generate({
+      type: 'reset',
+      user_id: user.id,
+    });
+
+    await resetUserPassword.execute({
+      token,
+      password: '123123',
+      password_confirmation: '123123',
+    });
+
+    const findToken = await fakeUserTokensRepository.findByToken(token);
+
+    expect(findToken).toBeUndefined();
+  });
+
   it('should not be able to reset user password with an invalid token.', async () => {
     await expect(
       resetUserPassword.execute({

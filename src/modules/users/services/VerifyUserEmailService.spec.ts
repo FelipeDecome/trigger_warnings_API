@@ -40,6 +40,27 @@ describe('VerifyUserEmail', () => {
     expect(user.email_verified).toBeTruthy();
   });
 
+  it('should be able to delete token after verifying the user.', async () => {
+    const user = await fakeUsersRepository.create({
+      name: 'John Doe',
+      email: 'johndoe@example.com.br',
+      password: '123456',
+    });
+
+    const { token } = await fakeUserTokensRepository.generate({
+      type: 'confirmation',
+      user_id: user.id,
+    });
+
+    await verifyUserEmail.execute({
+      token,
+    });
+
+    const findToken = await fakeUserTokensRepository.findByToken(token);
+
+    expect(findToken).toBeUndefined();
+  });
+
   it('should not be able to verify the user with an invalid token.', async () => {
     await expect(
       verifyUserEmail.execute({

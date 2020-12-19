@@ -30,4 +30,10 @@ export default class FakeUserTokensRepository implements IUserTokensRepository {
 
     return userToken;
   }
+
+  public async delete(id: string): Promise<void> {
+    const findTokenIndex = this.userTokens.findIndex(token => token.id === id);
+
+    this.userTokens.splice(findTokenIndex, 1);
+  }
 }

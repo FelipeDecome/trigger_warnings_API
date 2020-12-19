@@ -24,7 +24,7 @@ class VerifyUserEmailService {
 
     if (!findToken) throw new AppError('Confirmation token does not exist.');
 
-    const { user_id, type } = findToken;
+    const { id, user_id, type } = findToken;
 
     if (type !== 'confirmation')
       throw new AppError(
@@ -41,6 +41,8 @@ class VerifyUserEmailService {
     user.email_verified = true;
 
     await this.usersRepository.save(user);
+
+    await this.userTokensRepository.delete(id);
   }
 }
 
