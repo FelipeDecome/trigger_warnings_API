@@ -35,6 +35,9 @@ class VerifyUserEmailService {
 
     if (!user) throw new AppError('Something went wrong finding the user.');
 
+    if (user.email_verified)
+      throw new AppError("Can't verify an user already verified.");
+
     user.email_verified = true;
 
     await this.usersRepository.save(user);

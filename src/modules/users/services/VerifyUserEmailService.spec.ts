@@ -79,4 +79,26 @@ describe('VerifyUserEmail', () => {
       }),
     ).rejects.toBeInstanceOf(AppError);
   });
+
+  it('should not be able to verify if the email is already verified.', async () => {
+    const user = await fakeUsersRepository.create({
+      name: 'John Doe',
+      email: 'johndoe@example.com.br',
+      password: '123456',
+    });
+
+    const { token } = await fakeUserTokensRepository.generate({
+      type: 'confirmation',
+      user_id: user.id,
+    });
+
+    user.email_verified = true;
+    await fakeUsersRepository.save(user);
+
+    await expect(
+      verifyUserEmail.execute({
+        token,
+      }),
+    ).rejects.toBeInstanceOf(AppError);
+  });
 });
