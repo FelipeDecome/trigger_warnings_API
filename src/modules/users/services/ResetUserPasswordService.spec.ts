@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import { v4 as uuid } from 'uuid';
 
 import AppError from '@shared/errors/AppError';
 import FakeUsersRepository from '../repositories/fakes/FakeUsersRepository';
@@ -78,6 +79,14 @@ describe('ResetUserPassword', () => {
     await expect(
       resetUserPassword.execute({
         token: 'invalid_token',
+        password: '123123',
+        password_confirmation: '123123',
+      }),
+    ).rejects.toBeInstanceOf(AppError);
+
+    await expect(
+      resetUserPassword.execute({
+        token: uuid(),
         password: '123123',
         password_confirmation: '123123',
       }),
