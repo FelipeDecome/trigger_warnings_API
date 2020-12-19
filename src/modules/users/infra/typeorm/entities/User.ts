@@ -20,6 +20,9 @@ class User {
   @Column()
   password: string;
 
+  @Column('boolean')
+  email_verified: boolean;
+
   @CreateDateColumn()
   created_at: Date;
 

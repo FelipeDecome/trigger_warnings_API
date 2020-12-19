@@ -21,6 +21,7 @@ export default class FakeUserTokensRepository implements IUserTokensRepository {
     Object.assign(userToken, data, {
       id: uuid(),
       token: uuid(),
+      email_verified: false,
       created_at: Date.now(),
       updated_at: Date.now(),
     });
