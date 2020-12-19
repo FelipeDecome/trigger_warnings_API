@@ -47,7 +47,7 @@ describe('SendForgotPassword', () => {
     });
   });
 
-  it("should not be able to send a recuperation email if user doesn't exist", async () => {
+  it("should not be able to send a recuperation email if user doesn't exist.", async () => {
     await expect(
       sendForgotPasswordEmail.execute({
         email: 'non_existent_user',
@@ -72,5 +72,22 @@ describe('SendForgotPassword', () => {
       type: 'reset',
       user_id: user.id,
     });
+  });
+
+  it('should not be able to send a recuperation email if user is already verified.', async () => {
+    const user = await fakeUsersRepository.create({
+      name: 'John Doe',
+      email: 'johndoe@example.com.br',
+      password: '123456',
+    });
+
+    user.email_verified = true;
+    await fakeUsersRepository.save(user);
+
+    await expect(
+      sendForgotPasswordEmail.execute({
+        email: user.email,
+      }),
+    ).rejects.toBeInstanceOf(AppError);
   });
 });
