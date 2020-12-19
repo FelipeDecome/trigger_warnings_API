@@ -73,4 +73,21 @@ describe('SendForgotPassword', () => {
       user_id: user.id,
     });
   });
+
+  it('should not be able to send a recuperation email if user is already verified.', async () => {
+    const user = await fakeUsersRepository.create({
+      name: 'John Doe',
+      email: 'johndoe@example.com.br',
+      password: '123456',
+    });
+
+    user.email_verified = true;
+    await fakeUsersRepository.save(user);
+
+    await expect(
+      sendForgotPasswordEmail.execute({
+        email: user.email,
+      }),
+    ).rejects.toBeInstanceOf(AppError);
+  });
 });

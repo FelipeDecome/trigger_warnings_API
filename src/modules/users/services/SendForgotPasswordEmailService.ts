@@ -30,6 +30,9 @@ class SendForgotPasswordEmailService {
 
     if (!user) throw new AppError('User not found');
 
+    if (user.email_verified)
+      throw new AppError("Can't generate a reset token for a verified user.");
+
     const { token } = await this.userTokensRepository.generate({
       type: 'reset',
       user_id: user.id,
