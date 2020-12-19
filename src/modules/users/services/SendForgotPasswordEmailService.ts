@@ -42,7 +42,7 @@ class SendForgotPasswordEmailService {
       'forgot_password.hbs',
     );
 
-    const link = `${baseUrl}/users/reset/${token}`;
+    const link = `${baseUrl}/password/reset/${token}`;
 
     await this.mailProvider.sendMail({
       to: {
