@@ -1,16 +1,18 @@
 import { Request, Response } from 'express';
 import { container } from 'tsyringe';
 
-import VerifyUserEmailService from '@modules/users/services/VerifyUserEmailService';
+import SendForgotPasswordEmailService from '@modules/users/services/SendForgotPasswordEmailService';
 
 class ConfirmationController {
   public async create(request: Request, response: Response): Promise<Response> {
-    const { token } = request.params;
+    const { email } = request.body;
 
-    const verifyUserEmail = container.resolve(VerifyUserEmailService);
+    const sendForgotPasswordEmail = container.resolve(
+      SendForgotPasswordEmailService,
+    );
 
-    await verifyUserEmail.execute({
-      token,
+    await sendForgotPasswordEmail.execute({
+      email,
     });
 
     return response.status(204).send();

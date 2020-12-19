@@ -5,6 +5,6 @@ const confirmationController = new ConfirmationController();
 
 const confirmationRouter = Router();
 
-confirmationRouter.patch('/:token', confirmationController.update);
+confirmationRouter.patch('/:token', confirmationController.create);
 
 export default confirmationRouter;

@@ -3,6 +3,7 @@ import { inject, injectable } from 'tsyringe';
 import AppError from '@shared/errors/AppError';
 
 import IMailProvider from '@shared/container/providers/MailProvider/models/IMailProvider';
+import baseUrl from '@config/baseUrl';
 import IHashProvider from '../providers/HashProvider/models/IHashProvider';
 import IUsersRepository from '../repositories/IUsersRepository';
 import User from '../infra/typeorm/entities/User';
@@ -48,7 +49,7 @@ class CreateUserService {
       password: hashedPassword,
     });
 
-    const confirmationToken = await this.userTokensRepository.generate({
+    const { token } = await this.userTokensRepository.generate({
       type: 'confirmation',
       user_id: user.id,
     });
@@ -60,7 +61,7 @@ class CreateUserService {
       'create_user.hbs',
     );
 
-    const link = `https://localhost:3333/users/confirmation/${confirmationToken.token}`;
+    const link = `${baseUrl}/users/confirmation/${token}`;
 
     await this.mailProvider.sendMail({
       to: {

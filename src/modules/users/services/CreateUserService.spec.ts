@@ -40,7 +40,7 @@ describe('CreateUser', () => {
       password: '123456',
     });
 
-    expect(generateHash).toBeCalledWith('123456');
+    expect(generateHash).toHaveBeenCalledWith('123456');
     expect(user).toBeInstanceOf(User);
     expect(user.id).toBeDefined();
   });
@@ -60,7 +60,7 @@ describe('CreateUser', () => {
       user_id: user.id,
     });
 
-    expect(sendMail).toBeCalled();
+    expect(sendMail).toHaveBeenCalled();
   });
 
   it('should not be able to create a user if the name is undefined.', async () => {
