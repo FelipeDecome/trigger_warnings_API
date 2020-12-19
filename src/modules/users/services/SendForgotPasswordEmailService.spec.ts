@@ -47,7 +47,7 @@ describe('SendForgotPassword', () => {
     });
   });
 
-  it("should not be able to send a recuperation email if user doesn't exist", async () => {
+  it("should not be able to send a recuperation email if user doesn't exist.", async () => {
     await expect(
       sendForgotPasswordEmail.execute({
         email: 'non_existent_user',
