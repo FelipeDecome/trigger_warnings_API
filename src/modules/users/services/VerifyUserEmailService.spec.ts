@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import { v4 as uuid } from 'uuid';
 
 import AppError from '@shared/errors/AppError';
 import FakeUsersRepository from '../repositories/fakes/FakeUsersRepository';
@@ -65,6 +66,12 @@ describe('VerifyUserEmail', () => {
     await expect(
       verifyUserEmail.execute({
         token: 'invalid_token',
+      }),
+    ).rejects.toBeInstanceOf(AppError);
+
+    await expect(
+      verifyUserEmail.execute({
+        token: uuid(),
       }),
     ).rejects.toBeInstanceOf(AppError);
   });
