@@ -24,7 +24,12 @@ class VerifyUserEmailService {
 
     if (!findToken) throw new AppError('Confirmation token does not exist.');
 
-    const { user_id } = findToken;
+    const { user_id, type } = findToken;
+
+    if (type !== 'confirmation')
+      throw new AppError(
+        "You can't confirm your email without a confirmation token.",
+      );
 
     const user = await this.usersRepository.findById(user_id);
 

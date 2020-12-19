@@ -60,4 +60,23 @@ describe('VerifyUserEmail', () => {
       }),
     ).rejects.toBeInstanceOf(AppError);
   });
+
+  it('should not be able to verify if the token is not a confirmation token.', async () => {
+    const user = await fakeUsersRepository.create({
+      name: 'John Doe',
+      email: 'johndoe@example.com.br',
+      password: '123456',
+    });
+
+    const userToken = await fakeUserTokensRepository.generate({
+      type: 'reset',
+      user_id: user.id,
+    });
+
+    await expect(
+      verifyUserEmail.execute({
+        token: userToken.token,
+      }),
+    ).rejects.toBeInstanceOf(AppError);
+  });
 });
