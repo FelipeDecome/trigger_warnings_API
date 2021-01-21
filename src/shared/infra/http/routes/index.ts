@@ -5,8 +5,7 @@ import sessionsRouter from '@modules/users/infra/http/routes/sessions.routes';
 import confirmationRouter from '@modules/users/infra/http/routes/confirmation.routes';
 import passwordRouter from '@modules/users/infra/http/routes/password.routes';
 
-import warningRouter from '@modules/warnings/infra/http/routes/warning.routes';
-import sensitiveContentRouter from '@modules/warnings/infra/http/routes/sensitiveContent.routes';
+import triggersRouter from '@modules/triggers/infra/http/routes/triggers.routes';
 
 const routes = Router();
 
@@ -15,7 +14,6 @@ routes.use('/sessions', sessionsRouter);
 routes.use('/confirmation', confirmationRouter);
 routes.use('/password', passwordRouter);
 
-routes.use('/warnings', warningRouter);
-routes.use('/sensitive-contents', sensitiveContentRouter);
+routes.use('/triggers', triggersRouter);
 
 export default routes;
