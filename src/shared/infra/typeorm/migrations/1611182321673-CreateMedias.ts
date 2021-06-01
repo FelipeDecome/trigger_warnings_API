@@ -8,7 +8,7 @@ export default class CreateMedias1611182321673 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'triggers',
+        name: 'medias',
         columns: [
           primaryGeneratedColumn,
           {
@@ -24,6 +24,6 @@ export default class CreateMedias1611182321673 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('triggers');
+    await queryRunner.dropTable('medias');
   }
 }
